@@ -1,6 +1,24 @@
-# 🧩 Vue 3 Project Structure Guide
+# Vue 3 Project Structure Guide
 
-This project follows a **feature-based architecture** with clearly separated modules for features, shared utilities, and global plugins.
+## Installation
+
+Create a new project using the CLI:
+
+```bash
+npm create primestrider-vue
+```
+
+---
+
+This project follows a **feature-based architecture** with clearly separated modules for features, shared utilities, and global plugins with a **scalable Vue 3 starter kit** using Vite, TypeScript, Pinia, Vue Router, TailwindCSS, Vue Query, and best‑practice folder structure. It provides:
+
+- Organized feature‑based architecture
+- Built‑in i18n support
+- Shared reusable components and models
+- Auto‑generated feature scaffolding (`create-feature` script)
+- Modern tooling: ESLint, Prettier, TypeScript
+
+Perfect for medium‑to‑large Vue applications that require clean structure, maintainability, and scalability.
 
 ---
 
@@ -33,9 +51,7 @@ src/
 
 ---
 
-## 📦 Packages Used
-
-### **Dependencies**
+### Packages Dependencies
 
 - **vue** – The core Vue 3 framework.
 - **vue-router** – Routing system for handling pages.
@@ -51,17 +67,3 @@ src/
 - **@tailwindcss/vite** – Tailwind integration for Vite.
 - **date-fns** – Date utilities.
 - **zod** – Schema validation & parsing.
-
----
-
-## 📝 Project Description
-
-This boilerplate is a **scalable Vue 3 starter kit** using Vite, TypeScript, Pinia, Vue Router, TailwindCSS, Vue Query, and best‑practice folder structure. It provides:
-
-- Organized feature‑based architecture
-- Built‑in i18n support
-- Shared reusable components and models
-- Auto‑generated feature scaffolding (`create-feature` script)
-- Modern tooling: ESLint, Prettier, TypeScript
-
-Perfect for medium‑to‑large Vue applications that require clean structure, maintainability, and scalability.
