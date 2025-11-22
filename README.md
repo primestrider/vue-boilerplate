@@ -30,3 +30,38 @@ src/
 │   ├── routes/                   # Global or fallback routes
 │   └── views/                    # Shared views (e.g. 404 Page)
 ```
+
+---
+
+## 📦 Packages Used
+
+### **Dependencies**
+
+- **vue** – The core Vue 3 framework.
+- **vue-router** – Routing system for handling pages.
+- **pinia** – State management library.
+- **vue-i18n** – Internationalization support.
+- **axios** – HTTP client for API calls.
+- **@tanstack/vue-query** – Data fetching & caching utilities.
+- **@vueuse/core** – Utility composables for Vue.
+- **@vueuse/integrations** – Integrations for libraries (e.g., validation, cookies).
+- **vee-validate** – Form validation framework.
+- **universal-cookie** – Cookie handling.
+- **tailwindcss** – Utility-first CSS framework.
+- **@tailwindcss/vite** – Tailwind integration for Vite.
+- **date-fns** – Date utilities.
+- **zod** – Schema validation & parsing.
+
+---
+
+## 📝 Project Description
+
+This boilerplate is a **scalable Vue 3 starter kit** using Vite, TypeScript, Pinia, Vue Router, TailwindCSS, Vue Query, and best‑practice folder structure. It provides:
+
+- Organized feature‑based architecture
+- Built‑in i18n support
+- Shared reusable components and models
+- Auto‑generated feature scaffolding (`create-feature` script)
+- Modern tooling: ESLint, Prettier, TypeScript
+
+Perfect for medium‑to‑large Vue applications that require clean structure, maintainability, and scalability.
