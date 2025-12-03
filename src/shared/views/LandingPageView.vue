@@ -32,7 +32,7 @@
     </div>
 
     <footer class="mt-20 text-sm text-gray-500 animate-fade-in-slow">
-      <p>© {{ new Date().getFullYear() }} chaosmyth7 — Crafted with 💚 using Vue 3 + Tailwind 4</p>
+      <p>© {{ new Date().getFullYear() }} crafted with Vue 3 + Tailwind 4</p>
     </footer>
   </div>
 </template>
