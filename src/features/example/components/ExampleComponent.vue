@@ -1,4 +1,6 @@
 <script setup lang="ts"></script>
 <template>
-  <div>Feature A</div>
+  <div>
+    <h1 class="text-2xl font-bold">Example</h1>
+  </div>
 </template>

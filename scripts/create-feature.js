@@ -1,32 +1,40 @@
-import fs from 'fs'
-import path from 'path'
+import fs from "fs"
+import path from "path"
 
 const featureName = process.argv[2]
 
 if (!featureName) {
-  console.error('❌ Please provide a feature name. Example: npm run create-feature feature-a')
+  console.error("❌ Please provide a feature name. Example: npm run create-feature feature-a")
   process.exit(1)
 }
 
-// Convert ke PascalCase
+// PascalCase: my-testing -> MyTesting
 const pascalCase = featureName
-  .split('-')
+  .split("-")
   .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-  .join('')
+  .join("")
 
-const baseDir = path.resolve('src/features', featureName)
-const routerFilePath = path.resolve('src/router/index.ts')
+// camelCase: my-testing -> myTesting
+const camelCase = featureName
+  .split("-")
+  .map((w, i) => (i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1)))
+  .join("")
+
+const baseDir = path.resolve("src/features", featureName)
+const routerFilePath = path.resolve("src/router/index.ts")
 
 if (fs.existsSync(baseDir)) {
   console.error(`⚠️ Feature "${featureName}" already exists.`)
   process.exit(1)
 }
 
-// Template isi file
+// ==== TEMPLATES =====
 const templates = {
   component: `<script setup lang="ts"></script>
 <template>
-  <div>${pascalCase}</div>
+  <div>
+    <h1 class="text-2xl font-bold">${pascalCase}</h1>
+  </div>
 </template>
 `,
 
@@ -47,7 +55,7 @@ export type ${pascalCase}RequestPayload = {
   route: `import type { RouteRecordRaw } from 'vue-router'
 import { ${pascalCase}PageName } from '../models'
 
-const ${featureName}Routes: RouteRecordRaw[] = [
+const ${camelCase}Routes: RouteRecordRaw[] = [
   {
     path: '/${featureName}',
     name: ${pascalCase}PageName.${pascalCase.toUpperCase()},
@@ -55,7 +63,7 @@ const ${featureName}Routes: RouteRecordRaw[] = [
   },
 ]
 
-export default ${featureName}Routes
+export default ${camelCase}Routes
 `,
 
   service: `import axiosInstance from '@/plugins/axios'
@@ -81,7 +89,7 @@ import ${pascalCase}Component from '../components/${pascalCase}Component.vue'
 </script>
 
 <template>
-  <div>
+  <div class="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-gray-100 px-6">
     <${pascalCase}Component></${pascalCase}Component>
   </div>
 </template>
@@ -95,18 +103,18 @@ const structure = {
     [`${featureName}.en.ts`]: templates.language,
     [`${featureName}.id.ts`]: templates.language,
   },
-  models: { 'index.ts': templates.model },
-  routes: { 'index.ts': templates.route },
-  services: { 'api.ts': templates.service },
+  models: { "index.ts": templates.model },
+  routes: { "index.ts": templates.route },
+  services: { "api.ts": templates.service },
   stores: {},
   views: { [`${pascalCase}View.vue`]: templates.view },
 }
 
-// Buat folder dan isi file
+// ==== BUAT FOLDER & FILE FEATURE ====
 fs.mkdirSync(baseDir, { recursive: true })
 Object.entries(structure).forEach(([folder, files]) => {
   const folderPath = path.join(baseDir, folder)
-  fs.mkdirSync(folderPath)
+  fs.mkdirSync(folderPath, { recursive: true })
   Object.entries(files).forEach(([filename, content]) => {
     fs.writeFileSync(path.join(folderPath, filename), content)
   })
@@ -114,19 +122,91 @@ Object.entries(structure).forEach(([folder, files]) => {
 
 console.log(`✅ Feature "${featureName}" created successfully at src/features/${featureName}`)
 
-// --- 🔥 Update router/index.ts ---
-if (fs.existsSync(routerFilePath)) {
-  let routerContent = fs.readFileSync(routerFilePath, 'utf-8')
+// ==== UPDATE LOCALES (id & en) ====
+// Contoh target file:
+// src/plugins/language/locales/id.ts
+// src/plugins/language/locales/en.ts
+//
+// import example from "@/features/example/languages/example.id"
+// import utils from "@/shared/languages/utils.id"
+//
+// export default {
+//   features: {
+//     example,
+//   },
+//   utils,
+// }
 
-  const importStatement = `import ${featureName}Routes from '@/features/${featureName}/routes'`
-  const spreadStatement = `...${featureName}Routes`
+const localeConfigs = [
+  { locale: "id", langExt: "id" },
+  { locale: "en", langExt: "en" },
+]
+
+function updateLocaleFile({ locale, langExt }) {
+  const localeFilePath = path.resolve(`src/plugins/language/locales/${locale}.ts`)
+
+  if (!fs.existsSync(localeFilePath)) {
+    console.warn(`⚠️ File src/plugins/language/locales/${locale}.ts tidak ditemukan, skip.`)
+    return
+  }
+
+  let localeContent = fs.readFileSync(localeFilePath, "utf-8")
+
+  const importStatement = `import ${camelCase} from "@/features/${featureName}/languages/${featureName}.${langExt}"`
+
+  // 1) Tambah import kalau belum ada
+  if (!localeContent.includes(importStatement)) {
+    const importLines = localeContent.match(/^import.*$/gm) || []
+    const lastImport = importLines[importLines.length - 1]
+
+    if (lastImport) {
+      localeContent = localeContent.replace(lastImport, `${lastImport}\n${importStatement}`)
+    } else {
+      localeContent = `${importStatement}\n${localeContent}`
+    }
+  }
+
+  // 2) Tambah ke objek features
+  const featuresRegex = /features:\s*{([\s\S]*?)}/m
+  const featuresMatch = localeContent.match(featuresRegex)
+
+  if (featuresMatch) {
+    const featuresContent = featuresMatch[1]
+
+    if (!featuresContent.includes(camelCase)) {
+      const newFeaturesContent = `${featuresContent}\n    ${camelCase},`
+      const replacement = `features: {${newFeaturesContent}\n  }`
+      localeContent = localeContent.replace(featuresRegex, replacement)
+    }
+  } else {
+    console.warn(
+      `⚠️ Object 'features' tidak ditemukan di src/plugins/language/locales/${locale}.ts`,
+    )
+  }
+
+  fs.writeFileSync(localeFilePath, localeContent, "utf-8")
+  console.log(`✅ Added ${camelCase} language to src/plugins/language/locales/${locale}.ts`)
+}
+
+localeConfigs.forEach(updateLocaleFile)
+
+// ==== UPDATE ROUTER ====
+if (fs.existsSync(routerFilePath)) {
+  let routerContent = fs.readFileSync(routerFilePath, "utf-8")
+
+  const importStatement = `import ${camelCase}Routes from '@/features/${featureName}/routes'`
+  const spreadStatement = `...${camelCase}Routes`
 
   // Tambahkan import kalau belum ada
   if (!routerContent.includes(importStatement)) {
-    // Tambah di atas import lainnya (setelah import pertama)
     const importLines = routerContent.match(/^import.*$/gm) || []
     const lastImport = importLines[importLines.length - 1]
-    routerContent = routerContent.replace(lastImport, `${lastImport}\n${importStatement}`)
+
+    if (lastImport) {
+      routerContent = routerContent.replace(lastImport, `${lastImport}\n${importStatement}`)
+    } else {
+      routerContent = `${importStatement}\n${routerContent}`
+    }
   }
 
   // Tambahkan ke listRoutes
@@ -136,10 +216,9 @@ if (fs.existsSync(routerFilePath)) {
     const alreadyExists = listContent.includes(spreadStatement)
 
     if (!alreadyExists) {
-      // Sisipkan sebelum `]` dan pastikan koma ditambahkan
-      const newListContent = listContent.endsWith(',')
+      const newListContent = listContent.endsWith(",")
         ? `${listContent}\n  ${spreadStatement},`
-        : `${listContent}${listContent ? ',' : ''}\n  ${spreadStatement},`
+        : `${listContent}${listContent ? "," : ""}\n  ${spreadStatement},`
 
       routerContent = routerContent.replace(
         listRoutesMatch[0],
@@ -150,8 +229,8 @@ if (fs.existsSync(routerFilePath)) {
     console.warn("⚠️ Could not find 'listRoutes' array in router/index.ts")
   }
 
-  fs.writeFileSync(routerFilePath, routerContent, 'utf-8')
-  console.log(`✅ Added ${featureName}Routes to router/index.ts`)
+  fs.writeFileSync(routerFilePath, routerContent, "utf-8")
+  console.log(`✅ Added ${camelCase}Routes to router/index.ts`)
 } else {
-  console.warn('⚠️ router/index.ts not found, skipping route registration.')
+  console.warn("⚠️ router/index.ts not found, skipping route registration.")
 }
