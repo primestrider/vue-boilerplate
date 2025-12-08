@@ -1,9 +1,9 @@
-import featureA from "@/features/feature-a/languages/feature-a.id"
+import example from "@/features/example/languages/example.id"
 import utils from "@/shared/languages/utils.id"
 
 export default {
   features: {
-    featureA,
+    example,
   },
   utils,
 }

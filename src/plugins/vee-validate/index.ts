@@ -17,9 +17,14 @@ function configureVeeValidate() {
     validateOnModelUpdate: true,
     bails: true,
     generateMessage: (context) => {
-      const t = i18n.global.t
       const field = context.field || "field"
-      return t("validation.default", { field })
+      const t = i18n?.global?.t
+
+      if (!t) {
+        return `The ${field} field is invalid.`
+      }
+
+      return t("utils.validation.default", { field })
     },
   })
 }
