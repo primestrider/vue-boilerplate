@@ -1,3 +1,5 @@
+import type { DATE_FNS_LOCALES } from "../helpers/date"
+
 export enum UtilsPageName {
   PAGE_NOT_FOUND = "PageNotFound",
 }
@@ -33,3 +35,5 @@ export type BaseFormFieldProps = {
    */
   disabled?: boolean
 }
+
+export type DateLocaleCode = keyof typeof DATE_FNS_LOCALES
