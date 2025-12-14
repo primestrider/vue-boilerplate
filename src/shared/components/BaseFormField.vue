@@ -71,18 +71,7 @@ const describedBy = computed(() => errorId.value || hintId.value)
     </label>
 
     <!-- Input wrapper -->
-    <div
-      class="rounded-md border transition focus-within:ring-2"
-      :class="[
-        disabled
-          ? 'border-slate-700 bg-slate-900 opacity-60 cursor-not-allowed'
-          : hasError
-            ? 'border-red-500 focus-within:ring-red-500'
-            : 'border-slate-700 focus-within:ring-blue-500',
-      ]"
-      :aria-invalid="hasError"
-      :aria-describedby="describedBy"
-    >
+    <div :aria-invalid="hasError" :aria-describedby="describedBy">
       <slot />
     </div>
 
