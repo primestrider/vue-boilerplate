@@ -189,7 +189,7 @@ const handleCreatePost = (): void => {
         </p>
 
         <ul v-if="comments && !isCommentsError" class="max-h-32 space-y-1 overflow-auto text-xs">
-          <li v-for="comment in comments.slice(0, 5)" :key="comment.id">
+          <li v-for="comment in comments" :key="comment.id">
             <span class="font-semibold">{{ comment.email }}</span
             >:
             <span class="text-neutral-300">{{ comment.body }}</span>
