@@ -63,11 +63,13 @@ const describedBy = computed(() => errorId.value || hintId.value)
     <!-- Label (reserved height to prevent layout shift) -->
     <label
       :for="fieldName || undefined"
-      class="min-h-4 ml-2 text-sm font-medium flex items-center transition"
+      class="min-h-2 ml-2 text-sm font-medium flex items-end transition"
       :class="disabled ? 'text-slate-500' : 'text-slate-300'"
     >
       <slot name="label">
-        {{ label }}
+        <span :class="label ? '' : 'invisible'">
+          {{ label || "placeholder" }}
+        </span>
       </slot>
 
       <span v-if="required && !disabled && label" class="ml-0.5 text-red-400" aria-hidden="true">
@@ -76,12 +78,16 @@ const describedBy = computed(() => errorId.value || hintId.value)
     </label>
 
     <!-- Input -->
-    <div :aria-invalid="hasError" :aria-describedby="describedBy">
+    <div
+      class="flex items-center min-h-[3rem]"
+      :aria-invalid="hasError"
+      :aria-describedby="describedBy"
+    >
       <slot />
     </div>
 
     <!-- Message row (reserved height, no fake content) -->
-    <div class="min-h-4 text-sm ml-2" aria-live="polite">
+    <div class="min-h-2 text-sm ml-2" aria-live="polite">
       <p v-if="hasError" :id="errorId" class="text-red-400">
         {{ error }}
       </p>
